@@ -34,13 +34,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ovh.rubiks.devmobile.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home() {
+fun Home(navController: NavController) {
     Scaffold(topBar = {
         TopAppBar(title = { Text(text = "DevMobile") }, actions = {
             IconButton(onClick = { /*TODO*/ }) {
@@ -64,7 +65,7 @@ fun Home() {
                     contentDescription = "Home"
                 )
             }, label = { Text(text = "Home") })
-            NavigationBarItem(selected = false, onClick = { /*TODO*/ }, icon = {
+            NavigationBarItem(selected = false, onClick = {  }, icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_manage_search_24),
                     contentDescription = "Search"

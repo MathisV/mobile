@@ -1,6 +1,5 @@
 package ovh.rubiks.devmobile.ui.screen
 
-import android.content.ContentValues
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,28 +11,33 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import ovh.rubiks.devmobile.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Signin() {
+fun Signin(navController: NavController) {
     var email = remember { mutableStateOf(TextFieldValue("")) }
     var password = remember { mutableStateOf(TextFieldValue("")) }
-    var message = remember { mutableStateOf(TextFieldValue("")) }
+    var message by remember { mutableStateOf<String?>(null) }
 
     Scaffold { it ->
         Column(
@@ -87,41 +91,50 @@ fun Signin() {
                         .padding(vertical = 10.dp, horizontal = 12.dp)
                         .fillMaxWidth(),
                     onClick = {
-                        val firebaseAuth = Firebase.auth
-
-                        firebaseAuth.signInWithEmailAndPassword(
-                            email.value.text,
-                            password.value.text
-                        ).addOnCompleteListener {
-                            val uid = it.result.user?.uid
-                            if (it.isSuccessful && uid != null) {
-                                // Log in success
-                                Log.d(ContentValues.TAG, "signInWithEmail:success")
-                                message.value = TextFieldValue("You are now logged in.")
-                            } else if (it.isCanceled) {
-                                // Canceled
-                                Log.w(ContentValues.TAG, "signInWithEmail:failure", it.exception)
-                                message.value =
-                                    TextFieldValue("An error occured on sign in, please try again later.")
+                        try {
+                            signIn(email.value.text, password.value.text) { success, resultMessage ->
+                                message = resultMessage
+                                if (success) {
+                                    // Navigate to the next screen
+                                    navController.navigate("home")
+                                }
                             }
-                        }.addOnFailureListener() {
-                            // Log in failed
-                            Log.w(ContentValues.TAG, "createUserWithEmail:failure", it)
-                            message.value =
-                                TextFieldValue("An error occured on sign in, please try again later.")
+                        } catch (e: Exception) {
+                            message = e.message
                         }
-
                     }) {
                     Text("Sign In")
                 }
             }
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
-            ) {
-                Text(message.value.text)
+            if (message != null) {
+                Snackbar(
+                    action = {
+                        TextButton(onClick = { message = null }) {
+                            Text("Fermer")
+                        }
+                    },
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(message!!)
+                }
             }
         }
+    }
+}
+
+fun signIn(email: String, password: String, onResult: (Boolean, String) -> Unit) {
+    FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+        val message = if (task.isSuccessful) {
+            Log.d("Signin", "Successful Sign In!")
+            "Successful Sign In!"
+        } else {
+            Log.d("Signin", "Sign In Failed: ${task.exception?.message}")
+            when (val exception = task.exception) {
+                is FirebaseAuthInvalidCredentialsException -> "Password is incorrect or email is invalid."
+                is FirebaseAuthInvalidUserException -> "Email doesn't exist or has been disabled."
+                else -> exception?.message ?: "Unknown error occurred."
+            }
+        }
+        onResult(task.isSuccessful, message)
     }
 }

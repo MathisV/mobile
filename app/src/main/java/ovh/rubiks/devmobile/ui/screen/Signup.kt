@@ -12,32 +12,42 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.google.firebase.auth.ktx.auth
+import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import ovh.rubiks.devmobile.R
+import java.lang.Exception
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Signup() {
+fun Signup(navController: NavController) {
     val db = Firebase.firestore
 
     var firstname = remember { mutableStateOf(TextFieldValue("")) }
     var lastname = remember { mutableStateOf(TextFieldValue("")) }
     var email = remember { mutableStateOf(TextFieldValue("")) }
     var password = remember { mutableStateOf(TextFieldValue("")) }
-    var message = remember { mutableStateOf(TextFieldValue("")) }
+    var message by remember { mutableStateOf<String?>(null) }
 
     Scaffold { it ->
         Column(
@@ -122,56 +132,72 @@ fun Signup() {
                 Button(
                     modifier = Modifier.padding(vertical = 10.dp, horizontal = 12.dp).fillMaxWidth(),
                     onClick = {
-                    val firebaseAuth = Firebase.auth
-
-                    firebaseAuth.createUserWithEmailAndPassword(
-                        email.value.text,
-                        password.value.text
-                    ).addOnCompleteListener {
-                        val uid = it.result.user?.uid
-                        if (it.isSuccessful && uid != null) {
-                            // Log in success
-                            val user = hashMapOf(
-                                "first" to firstname.value.text,
-                                "last" to lastname.value.text
-                            )
-
-                            db.collection("users").document(uid).set(user)
-                                .addOnSuccessListener { documentReference ->
-                                    Log.d(
-                                        TAG,
-                                        "DocumentSnapshot added"
-                                    )
-                                    message.value = TextFieldValue("Your account have been successfully created ! Welcome ${firstname.value.text} ${lastname.value.text} !")
+                        try {
+                            signUp(
+                                email.value.text,
+                                password.value.text,
+                                firstname.value.text,
+                                lastname.value.text
+                            ) { success, resultMessage ->
+                                message = resultMessage
+                                if (success) {
+                                    // Navigate to the next screen
+                                    navController.navigate("signin")
                                 }
-                                .addOnFailureListener { e ->
-                                    Log.w(TAG, "Error adding document", e)
-                                    message.value = TextFieldValue("An error occured on information saving, please try again later.")
-                                }
-
-
-                        } else if (it.isCanceled) {
-                            // Canceled
-                            Log.w( TAG, "createUserWithEmail:failure", it.exception)
-                            message.value = TextFieldValue("Your account creation have been canceled, please try again later.")
+                            }
+                        } catch (e: Exception) {
+                            message = e.message
                         }
-                    }.addOnFailureListener() {
-                        // Log in failed
-                        Log.w( TAG, "createUserWithEmail:failure", it)
-                        message.value = TextFieldValue("An error occured on account creation, please try again later.")
-                    }
-
                 }) {
                     Text("Sign up")
                 }
             }
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
-            ) {
-                Text(message.value.text)
+            if (message != null) {
+                Snackbar(
+                    action = {
+                        TextButton(onClick = { message = null }) {
+                            Text("Fermer")
+                        }
+                    },
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(message!!)
+                }
             }
+        }
+    }
+}
+
+fun signUp(email: String, password: String, firstName: String, lastName: String, onResult: (Boolean, String) -> Unit) {
+    val auth = FirebaseAuth.getInstance()
+    val db = FirebaseFirestore.getInstance()
+
+    auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            val userId = auth.currentUser?.uid
+            if (userId != null) {
+                val user = hashMapOf(
+                    "firstName" to firstName,
+                    "lastName" to lastName
+                )
+                db.collection("users").document(userId)
+                    .set(user)
+                    .addOnSuccessListener {
+                        onResult(true, "Successful Sign Up!")
+                    }
+                    .addOnFailureListener { e ->
+                        onResult(false, e.message ?: "Error during Firestore operation")
+                    }
+            }
+        } else {
+            val message = when (val exception = task.exception) {
+                is FirebaseAuthWeakPasswordException -> "Password is too weak."
+                is FirebaseAuthInvalidCredentialsException -> "Email is malformed."
+                is FirebaseAuthUserCollisionException -> "Account with this email already exists."
+                else -> exception?.message ?: "Unknown error occurred."
+            }
+            onResult(false, message)
         }
     }
 }
