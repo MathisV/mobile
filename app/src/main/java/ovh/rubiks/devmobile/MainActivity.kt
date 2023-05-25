@@ -87,6 +87,8 @@ class MainActivity : ComponentActivity() {
 
             DevMobileTheme {
                 Signin()
+                //Home()
+                //Signup()
             }
         }
     }
