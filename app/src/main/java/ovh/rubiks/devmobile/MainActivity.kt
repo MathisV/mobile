@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import ovh.rubiks.devmobile.ui.screen.Home
+import ovh.rubiks.devmobile.ui.screen.SearchScreen
 import ovh.rubiks.devmobile.ui.screen.Signin
 import ovh.rubiks.devmobile.ui.screen.Signup
 import ovh.rubiks.devmobile.ui.theme.DevMobileTheme
@@ -47,10 +48,11 @@ class MainActivity() : ComponentActivity() {
 
             DevMobileTheme {
                 val navController = rememberNavController()
-                NavHost(navController, startDestination = "signup") {
+                NavHost(navController, startDestination = "search") {
                     composable("home") { Home(navController = navController) }
                     composable("signin") { Signin(navController = navController) }
                     composable("signup") { Signup(navController = navController) }
+                    composable("search") { SearchScreen()}
                 }
             }
         }
