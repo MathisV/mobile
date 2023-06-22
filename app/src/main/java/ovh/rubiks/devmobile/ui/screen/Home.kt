@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,8 +37,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -47,6 +50,7 @@ import ovh.rubiks.devmobile.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(navController: NavController) {
+    val navControllerHome = rememberNavController()
     Scaffold(topBar = {
         TopAppBar(title = { Text(text = "DevMobile") }, actions = {
             IconButton(onClick = { /*TODO*/ }) {
@@ -64,19 +68,21 @@ fun Home(navController: NavController) {
         })
     }, bottomBar = {
         NavigationBar() {
-            NavigationBarItem(selected = true, onClick = { /*TODO*/ }, icon = {
+            val navBackStackEntry by navControllerHome.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
+            NavigationBarItem(selected = currentDestination?.hierarchy?.any { it.route == "home" } == true, onClick = { navControllerHome.navigate("home");}, icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_home_24),
                     contentDescription = "Home"
                 )
             }, label = { Text(text = "Home") })
-            NavigationBarItem(selected = false, onClick = {  }, icon = {
+            NavigationBarItem(selected = currentDestination?.hierarchy?.any { it.route == "search" } == true, onClick = { navControllerHome.navigate("search") }, icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_manage_search_24),
                     contentDescription = "Search"
                 )
             }, label = { Text(text = "Search") })
-            NavigationBarItem(selected = false, onClick = { /*TODO*/ }, icon = {
+            NavigationBarItem(selected = currentDestination?.hierarchy?.any { it.route == "library" } == true, onClick = { /*TODO*/ }, icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_library_music_24),
                     contentDescription = "Library"
@@ -85,9 +91,9 @@ fun Home(navController: NavController) {
         }
     }) {
 
-        val navControllerHome = rememberNavController()
-        NavHost(navControllerHome, startDestination = "home") {
+        NavHost(navControllerHome, startDestination = "search", modifier = Modifier.fillMaxSize()) {
             composable("home") { HomePage(navController = navController) }
+            composable("search") { SearchScreen() }
             //composable("search") { Search(navController = navController) }
         }
 
