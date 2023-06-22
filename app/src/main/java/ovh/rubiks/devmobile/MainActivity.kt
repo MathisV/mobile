@@ -17,7 +17,6 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import ovh.rubiks.devmobile.ui.screen.Home
-import ovh.rubiks.devmobile.ui.screen.SearchScreen
 import ovh.rubiks.devmobile.ui.screen.Signin
 import ovh.rubiks.devmobile.ui.screen.Signup
 import ovh.rubiks.devmobile.ui.theme.DevMobileTheme
@@ -31,28 +30,27 @@ class MainActivity() : ComponentActivity() {
 
 
         setContent {
-            LaunchedEffect(key1 = Unit, block = {
-                val firebaseAuth = Firebase.auth
-
-                firebaseAuth.createUserWithEmailAndPassword("test@efficom.fr", "test12345").addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        // Log in success
-
-
-                    } else if (it.isCanceled) {
-                        // Canceled
-
-                    }
-                }
-            })
+//            LaunchedEffect(key1 = Unit, block = {
+//                val firebaseAuth = Firebase.auth
+//
+//                firebaseAuth.createUserWithEmailAndPassword("test@efficom.fr", "test12345").addOnCompleteListener {
+//                    if (it.isSuccessful) {
+//                        // Log in success
+//
+//
+//                    } else if (it.isCanceled) {
+//                        // Canceled
+//
+//                    }
+//                }
+//            })
 
             DevMobileTheme {
                 val navController = rememberNavController()
-                NavHost(navController, startDestination = "search") {
+                NavHost(navController, startDestination = "signin") {
                     composable("home") { Home(navController = navController) }
                     composable("signin") { Signin(navController = navController) }
                     composable("signup") { Signup(navController = navController) }
-                    composable("search") { SearchScreen()}
                 }
             }
         }

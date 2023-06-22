@@ -1,5 +1,6 @@
 package ovh.rubiks.devmobile.ui.screen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,10 +36,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import ovh.rubiks.devmobile.R
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(navController: NavController) {
@@ -77,30 +82,43 @@ fun Home(navController: NavController) {
                     contentDescription = "Library"
                 )
             }, label = { Text(text = "Library") })
+        }
+    }) {
 
-
+        val navControllerHome = rememberNavController()
+        NavHost(navControllerHome, startDestination = "home") {
+            composable("home") { HomePage(navController = navController) }
+            //composable("search") { Search(navController = navController) }
         }
 
+    }
+}
 
-    }) {
-        Column(modifier = Modifier
-            .padding(it)
-            .verticalScroll(rememberScrollState())) {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomePage(navController: NavController) {
+    Scaffold(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .verticalScroll(rememberScrollState())
+        ) {
             LazyRow(modifier = Modifier.fillMaxWidth()) {
                 items(10) {
-                    FilterChip(selected = false,
+                    FilterChip(
+                        selected = false,
                         onClick = { /*TODO*/ },
                         label = { Text(text = "Chip $it") },
                         modifier = Modifier.padding(5.dp)
                     )
                 }
             }
-            for(i in 1..3) {
+            for (i in 1..3) {
                 Row(
                     modifier = Modifier.heightIn(max = 100.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    for(i in 1..2) {
+                    for (i in 1..2) {
                         Card(
                             modifier = Modifier
                                 .weight(1f)
@@ -133,10 +151,12 @@ fun Home(navController: NavController) {
                     }
                 }
             }
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 100.dp)
-                .padding(vertical = 10.dp, horizontal = 35.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 100.dp)
+                    .padding(vertical = 10.dp, horizontal = 35.dp)
+            ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data("https://plus.unsplash.com/premium_photo-1661892088256-0a17130b3d0d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80")
@@ -150,7 +170,8 @@ fun Home(navController: NavController) {
                 Column(
                     modifier = Modifier
                         .weight(.7f)
-                        .padding(10.dp)) {
+                        .padding(10.dp)
+                ) {
 
                     Text(
                         text = "A beautiful dog",
