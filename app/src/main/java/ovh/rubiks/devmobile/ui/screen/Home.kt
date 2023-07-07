@@ -82,7 +82,7 @@ fun Home(navController: NavController) {
                     contentDescription = "Search"
                 )
             }, label = { Text(text = "Search") })
-            NavigationBarItem(selected = currentDestination?.hierarchy?.any { it.route == "library" } == true, onClick = { /*TODO*/ }, icon = {
+            NavigationBarItem(selected = currentDestination?.hierarchy?.any { it.route == "library" } == true, onClick = { navControllerHome.navigate("library") }, icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_library_music_24),
                     contentDescription = "Library"
