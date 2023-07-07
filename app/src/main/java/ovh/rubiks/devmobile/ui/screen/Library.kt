@@ -47,31 +47,31 @@ import coil.request.ImageRequest
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen() {
-    var searchText by remember { mutableStateOf("") }
+fun LibraryScreen() {
+    var libraryText by remember { mutableStateOf("") }
 
     val cardTitles = listOf(
-        "Rock",
-        "Jazz",
-        "Hip Hop",
-        "Pop",
-        "R&B",
-        "Podcasts"
+        "Playlist Jazz",
+        "Playlist Sport",
+        "All Eyez On Me - 2Pac",
+        "Playlist chill",
+        "Random Access Memories - Daft Punk",
+        "Podcasts de la semaine"
     )
 
-    val searchImageUrls = listOf(
-        // Icon Rock
-        "https://t.scdn.co/media/derived/rock_9ce79e0a4ef901bbd10494f5b855d3cc_0_0_274_274.jpg",
+    val imageUrls = listOf(
         // Icon Jazz
         "https://t.scdn.co/images/568f37f1cab54136939d63bd1f59d40c",
-        // Icon Hip Hop
-        "https://i.scdn.co/image/ab67706f00000002e48ac7e971606c850f5291ea",
-        // Icon Pop
-        "https://t.scdn.co/media/derived/pop-274x274_447148649685019f5e2a03a39e78ba52_0_0_274_274.jpg",
-        // Icon R&B
-        "https://t.scdn.co/media/derived/r-b-274x274_fd56efa72f4f63764b011b68121581d8_0_0_274_274.jpg",
-        // Icon Podcasts
-        "https://t.scdn.co/images/cd59d6084c4a4c5191aeaad187246f24.jpeg"
+        // Icon Sport
+        "https://i.scdn.co/image/ab67706c0000da84caabb495311669715b39e7eb",
+        // Icon All Eyez On Me - 2Pac
+        "https://i.scdn.co/image/ab67616d00001e02073aebff28f79959d2543596",
+        // Icon Playlist chill
+        "https://i.scdn.co/image/ab67706c0000da84672ab214077d7446c6dcd0ed",
+        // Icon Random Access Memories - Daft Punk
+        "https://i.scdn.co/image/ab67616d00001e029b9b36b0e22870b9f542d937",
+        // Icon Podcasts de la semaine
+        "https://i.scdn.co/image/ab67706f00000002c792d9c2e9d7ce6676de78d4"
     )
 
     Scaffold(modifier = Modifier.fillMaxSize()) {
@@ -84,9 +84,9 @@ fun SearchScreen() {
                 color = MaterialTheme.colorScheme.background
             ) {
                 OutlinedTextField(
-                    value = searchText,
-                    onValueChange = { searchText = it },
-                    label = { Text("Search") },
+                    value = libraryText,
+                    onValueChange = { libraryText = it },
+                    label = { Text("Library") },
                     trailingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = {
@@ -97,51 +97,42 @@ fun SearchScreen() {
                 )
             }
 
-            val columns = 2
-            val rows = (cardTitles.size + columns - 1) / columns
-
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(rows) { rowIndex ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                items(cardTitles.size) { index ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .heightIn(max = 120.dp)
+                            .clickable { /* Handle card click */ }
                     ) {
-                        val startIndex = rowIndex * columns
-                        val endIndex = minOf(startIndex + columns, cardTitles.size)
-                        for (cardIndex in startIndex until endIndex) {
-                            val imageUrl = searchImageUrls.getOrElse(cardIndex) { "" }
-                            Card(
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val imageUrl = imageUrls.getOrElse(index) { "" }
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(imageUrl)
+                                    .build(),
+                                contentDescription = "Image",
                                 modifier = Modifier
-                                    .padding(8.dp)
-                                    .weight(1f)
-                                    .clickable { /* Handle card click */ }
+                                    .size(120.dp)
+                                    .aspectRatio(1f)
+                                    .padding(end = 16.dp),
+                                contentScale = ContentScale.Crop
+                            )
+                            Column(
+                                modifier = Modifier.weight(1f)
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(16.dp)
-                                ) {
-                                    Text(
-                                        text = cardTitles[cardIndex],
-                                        modifier = Modifier.padding(bottom = 8.dp)
-                                    )
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        AsyncImage(
-                                            model = ImageRequest.Builder(LocalContext.current)
-                                                .data(imageUrl)
-                                                .build(),
-                                            contentDescription = "Image",
-                                            modifier = Modifier
-                                                .size(80.dp)
-                                                .aspectRatio(1f),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                        Text(
-                                            text = searchText,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    }
-                                }
+                                Text(
+                                    text = cardTitles[index],
+                                    modifier = Modifier.padding(bottom = 8.dp)
+                                )
+                                Text(
+                                    text = libraryText,
+                                    textAlign = TextAlign.Center
+                                )
                             }
                         }
                     }
@@ -150,6 +141,11 @@ fun SearchScreen() {
         }
     }
 }
+
+
+
+
+
 
 
 

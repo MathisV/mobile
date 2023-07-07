@@ -91,10 +91,10 @@ fun Home(navController: NavController) {
         }
     }) {
 
-        NavHost(navControllerHome, startDestination = "search", modifier = Modifier.fillMaxSize()) {
+        NavHost(navControllerHome, startDestination = "library", modifier = Modifier.fillMaxSize()) {
             composable("home") { HomePage(navController = navController) }
             composable("search") { SearchScreen() }
-            //composable("search") { Search(navController = navController) }
+            composable("library") { LibraryScreen() }
         }
 
     }
