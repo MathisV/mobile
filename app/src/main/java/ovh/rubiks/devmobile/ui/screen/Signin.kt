@@ -84,15 +84,18 @@ fun Signin(navController: NavController) {
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp)
             ) {
                 Button(
                     modifier = Modifier
-                        .padding(vertical = 10.dp, horizontal = 12.dp)
+                        .padding(vertical = 0.dp, horizontal = 0.dp)
                         .fillMaxWidth(),
                     onClick = {
                         try {
-                            signIn(email.value.text, password.value.text) { success, resultMessage ->
+                            signIn(
+                                email.value.text,
+                                password.value.text
+                            ) { success, resultMessage ->
                                 message = resultMessage
                                 if (success) {
                                     // Navigate to the next screen
@@ -104,6 +107,18 @@ fun Signin(navController: NavController) {
                         }
                     }) {
                     Text("Sign In")
+                }
+            }
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp)
+            ) {
+                Button(
+                    modifier = Modifier
+                        .padding(vertical = 0.dp, horizontal = 0.dp)
+                        .fillMaxWidth(),
+                    onClick = { navController.navigate("signup") }) {
+                    Text("Sign Up")
                 }
             }
             if (message != null) {

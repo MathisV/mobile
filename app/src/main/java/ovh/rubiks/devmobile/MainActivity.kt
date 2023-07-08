@@ -47,7 +47,7 @@ class MainActivity() : ComponentActivity() {
 
             DevMobileTheme {
                 val navController = rememberNavController()
-                NavHost(navController, startDestination = "home") {
+                NavHost(navController, startDestination = "signin") {
                     composable("home") { Home(navController = navController) }
                     composable("signin") { Signin(navController = navController) }
                     composable("signup") { Signup(navController = navController) }

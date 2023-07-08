@@ -130,7 +130,7 @@ fun Signup(navController: NavController) {
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
             ) {
                 Button(
-                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 12.dp).fillMaxWidth(),
+                    modifier = Modifier.padding(vertical = 0.dp, horizontal = 0.dp).fillMaxWidth(),
                     onClick = {
                         try {
                             signUp(
@@ -148,8 +148,20 @@ fun Signup(navController: NavController) {
                         } catch (e: Exception) {
                             message = e.message
                         }
-                }) {
+                    }) {
                     Text("Sign up")
+                }
+            }
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp)
+            ) {
+                Button(
+                    modifier = Modifier
+                        .padding(vertical = 0.dp, horizontal = 0.dp)
+                        .fillMaxWidth(),
+                    onClick = { navController.navigate("signin") }) {
+                    Text("Sign In")
                 }
             }
 

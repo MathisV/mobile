@@ -77,7 +77,7 @@ fun LibraryScreen() {
     Scaffold(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
-                .fillMaxSize().padding(vertical = 60.dp, horizontal = 55.dp)
+                .fillMaxSize().padding(vertical = 60.dp, horizontal = 15.dp)
         ) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),

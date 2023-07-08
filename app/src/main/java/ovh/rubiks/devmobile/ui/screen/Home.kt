@@ -103,7 +103,7 @@ fun Home(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController: NavController) {
-    Scaffold(modifier = Modifier.fillMaxSize()) {
+    Scaffold(modifier = Modifier.fillMaxSize().padding(vertical = 60.dp, horizontal = 15.dp)) {
         Column(
             modifier = Modifier
                 .padding(it)
