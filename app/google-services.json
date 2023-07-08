@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "219753552187",
+    "project_id": "mobile-4tech",
+    "storage_bucket": "mobile-4tech.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219753552187:android:ed9eff4812ff011a467f1e",
+        "android_client_info": {
+          "package_name": "ovh.rubiks.devmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "219753552187-21j2i267rcuhdbpt2a6d1uq1jdhoufer.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqu0370ZpcCdPcmGE8bOweg81EOwz9DqI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219753552187-21j2i267rcuhdbpt2a6d1uq1jdhoufer.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
